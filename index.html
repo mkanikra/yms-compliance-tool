@@ -10,7 +10,7 @@
 :root{--bg:#f0f2f5;--card:#fff;--text:#1a3a5c;--subtext:#666;--border:#e2e8f0;--primary:#1a73e8;--green:#28a745;--yellow:#ffc107;--red:#dc3545}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
 body.dark{--bg:#1a1a2e;--card:#16213e;--text:#e0e0e0;--subtext:#a0a0a0;--border:#2a4a6a}
-.container{max-width:1100px;margin:0 auto;padding:1rem}
+.container{max-width:1200px;margin:0 auto;padding:1rem}
 .header{background:linear-gradient(135deg,#1a3a5c,#1a73e8);color:#fff;padding:1.25rem 2rem;border-radius:10px;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
 .header h1{font-size:1.4rem;font-weight:700}
 .header-controls{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}
@@ -21,11 +21,13 @@ body.dark{--bg:#1a1a2e;--card:#16213e;--text:#e0e0e0;--subtext:#a0a0a0;--border:
 .btn-orange{background:#ff9900;color:#fff}
 .btn-purple{background:#6366f1;color:#fff}
 .btn-dark{background:#333;color:#fff}
+.btn-sm{padding:0.35rem 0.7rem;font-size:0.75rem}
 .card{background:var(--card);border-radius:10px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;border:1px solid var(--border)}
 .drop-zone{border:2px dashed #ccc;border-radius:10px;padding:2.5rem;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:1rem}
 .drop-zone:hover,.drop-zone.active{border-color:#1a73e8;background:rgba(26,115,232,0.05)}
 .drop-zone.success{border-color:#28a745;background:rgba(40,167,69,0.05)}
-input[type="text"]{padding:0.45rem 0.7rem;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-weight:700;text-align:center;width:90px;text-transform:uppercase;background:var(--card);color:var(--text)}
+input[type="text"],input[type="date"],input[type="week"]{padding:0.45rem 0.7rem;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-weight:700;text-align:center;background:var(--card);color:var(--text)}
+input[type="text"]{width:90px;text-transform:uppercase}
 .pills{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem}
 .pill{padding:0.4rem 0.8rem;border-radius:20px;border:none;cursor:pointer;font-size:0.8rem;font-weight:600}
 .pill.active{background:#1a73e8;color:#fff}
@@ -48,6 +50,16 @@ input[type="text"]{padding:0.45rem 0.7rem;border:1px solid var(--border);border-
 .late-container{max-height:300px;overflow-y:auto;border-radius:8px;border:1px solid #fecaca}
 .success-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:1rem;text-align:center;color:#16a34a;font-weight:600}
 .info-box{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:1rem;font-size:0.82rem;color:#78350f}
+.lane-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+.lane-table th{padding:0.5rem 0.6rem;text-align:left;background:#f1f5f9;color:#374151;font-weight:600;position:sticky;top:0}
+.lane-table td{padding:0.45rem 0.6rem;border-bottom:1px solid #f1f5f9}
+.delay-badge{padding:2px 8px;border-radius:10px;font-weight:700;font-size:0.75rem;display:inline-block}
+.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem}
+.tab-btn{padding:0.6rem 1.2rem;border:none;background:none;cursor:pointer;font-size:0.85rem;font-weight:600;color:var(--subtext);border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab-btn.active{color:#1a73e8;border-bottom-color:#1a73e8}
+.history-table{width:100%;border-collapse:collapse;font-size:0.78rem}
+.history-table th{padding:0.5rem;text-align:left;background:#f8f9fb;color:#374151;font-weight:600}
+.history-table td{padding:0.45rem 0.5rem;border-bottom:1px solid #f1f5f9}
 @media(max-width:768px){.container{padding:0.5rem}.header{padding:1rem;flex-direction:column;align-items:flex-start}}
 </style>
 </head>
@@ -61,8 +73,11 @@ input[type="text"]{padding:0.45rem 0.7rem;border:1px solid var(--border);border-
     <div class="header-controls">
       <input type="text" id="siteInput" value="GURX" placeholder="Site Code" onkeydown="if(event.key==='Enter')applySiteCode()">
       <button class="btn btn-primary" onclick="applySiteCode()">&#x1F50D;</button>
-      <button class="btn btn-orange" onclick="window.open('https://trans-logistics-eu.amazon.com/fmc/execution','_blank')">&#x1F517; Open FMC</button>
-      <button class="btn btn-dark" onclick="toggleDark()">&#x1F319; Dark</button>
+      <input type="date" id="dateInput" onchange="handleDateFilter(this.value)" title="Filter by date">
+      <input type="week" id="weekInput" onchange="handleWeekFilter(this.value)" title="Filter by week">
+      <button class="btn btn-sm btn-dark" onclick="resetFilters()" title="Reset date/week filter">&#x21BB; Reset</button>
+      <button class="btn btn-orange" onclick="window.open('https://trans-logistics-eu.amazon.com/fmc/execution','_blank')">&#x1F517; FMC</button>
+      <button class="btn btn-dark" onclick="toggleDark()">&#x1F319;</button>
     </div>
   </div>
   <div class="card">
@@ -84,14 +99,22 @@ input[type="text"]{padding:0.45rem 0.7rem;border:1px solid var(--border);border-
   </div>
   <div id="filtersSection" style="display:none"><div class="card"><div style="font-weight:600;margin-bottom:0.75rem">&#x1F504; Shift & Category Filter</div><div class="shift-pills" id="shiftPills"></div><div class="shift-pills" id="catPills"></div></div></div>
   <div id="reportSection" style="display:none"></div>
+  <div id="laneSection" style="display:none"></div>
+  <div id="delaySection" style="display:none"></div>
+  <div id="historySection" style="display:none"></div>
 </div>
 <script>
 let siteCode='GURX',parsedRows=[],currentReport=null,selectedDate='ALL',shiftFilter='full',categoryFilter='all';
+let reportHistory=[];try{reportHistory=JSON.parse(localStorage.getItem('yms_history')||'[]');}catch(e){reportHistory=[];}
 const SHIPPER_CATEGORIES=[{key:'milkrun',label:'Milkrun',keywords:['atsoutbound','outboundamzl']},{key:'air',label:'Air',keywords:['outboundairshuttle']},{key:'longhaul',label:'Long-Haul',keywords:['outboundamazonmanaged']},{key:'rail',label:'Rail',keywords:['outboundinrail']}];
 function toggleDark(){document.body.classList.toggle('dark')}
 function applySiteCode(){const v=document.getElementById('siteInput').value.trim().toUpperCase();if(v&&v!==siteCode){siteCode=v;document.getElementById('subtitle').textContent=siteCode+' Facility';if(parsedRows.length)processData();}}
 function handleDrop(e){e.preventDefault();document.getElementById('dropZone').classList.remove('active');if(e.dataTransfer.files.length)processFile(e.dataTransfer.files[0]);}
 function handleFileSelect(e){if(e.target.files.length)processFile(e.target.files[0]);}
+function handleDateFilter(val){document.getElementById('weekInput').value='';if(!val){selectedDate='ALL';processData();return;}selectedDate=val;processData();}
+function handleWeekFilter(val){document.getElementById('dateInput').value='';if(!val){selectedDate='ALL';processData();return;}const m=val.match(/^(\d{4})-W(\d{2})$/);if(!m){selectedDate='ALL';processData();return;}const yr=parseInt(m[1]),wk=parseInt(m[2]);const jan4=new Date(yr,0,4);const dow=jan4.getDay()||7;const mon=new Date(jan4);mon.setDate(jan4.getDate()-dow+1+(wk-1)*7);const sun=new Date(mon);sun.setDate(mon.getDate()+6);selectedDate='WEEK:'+fmtD(mon)+':'+fmtD(sun);processData();}
+function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function resetFilters(){document.getElementById('dateInput').value='';document.getElementById('weekInput').value='';selectedDate='ALL';processData();}
 function processFile(file){
   const ext=file.name.toLowerCase().split('.').pop();
   if(!['xlsx','xls','csv'].includes(ext)){showStatus('\u274C Please upload Excel file.','error');return;}
@@ -123,20 +146,25 @@ function exD(s){const days=Math.floor(s),frac=s-days,ts=Math.round(frac*86400),h
 function processData(){
   const su=siteCode.toUpperCase();
   const siteRows=parsedRows.filter(r=>{if(r.stop.toUpperCase().trim()!==su)return false;if(r.actionType.toLowerCase().trim()!=='pickup')return false;const p=r.lane.toUpperCase().trim().split('->').map(s=>s.trim());const i=p.indexOf(su);return i!==p.length-1;});
-  if(!siteRows.length){const stops=[...new Set(parsedRows.map(r=>r.stop.toUpperCase().trim()).filter(Boolean))];showStatus('\u274C No data for "'+su+'". Stops: '+stops.slice(0,15).join(', '),'error');document.getElementById('filtersSection').style.display='none';document.getElementById('reportSection').style.display='none';return;}
+  if(!siteRows.length){const stops=[...new Set(parsedRows.map(r=>r.stop.toUpperCase().trim()).filter(Boolean))];showStatus('\u274C No data for "'+su+'". Stops: '+stops.slice(0,15).join(', '),'error');document.getElementById('filtersSection').style.display='none';document.getElementById('reportSection').style.display='none';document.getElementById('laneSection').style.display='none';document.getElementById('delaySection').style.display='none';return;}
   const dc={};let wd=0;siteRows.forEach(r=>{if(hV(r.actualDeparture)){wd++;const ds=gDS(r.actualDeparture);if(ds)dc[ds]=(dc[ds]||0)+1;}});
   const dates=Object.entries(dc).sort((a,b)=>a[0].localeCompare(b[0]));
-  let ph='<div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem">\u1F4C5 Filter by Date:</div><div class="pills">';
-  ph+='<button class="pill '+(selectedDate==='ALL'?'active':'')+'" onclick="selDate(\'ALL\')">ALL ('+wd+')</button>';
+  let ph='<div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem">&#x1F4C5; Filter by Date:</div><div class="pills">';
+  const isAll=selectedDate==='ALL';
+  ph+='<button class="pill '+(isAll?'active':'')+'" onclick="selDate(\'ALL\')">ALL ('+wd+')</button>';
   dates.forEach(([d,c])=>{ph+='<button class="pill '+(selectedDate===d?'active':'')+'" onclick="selDate(\''+d+'\')">'+d+' ('+c+')</button>';});
   ph+='</div>';document.getElementById('datePills').innerHTML=ph;
   showStatus('\u2705 '+su+': '+siteRows.length+' vehicles | Departed: '+wd+' | Pending: '+(siteRows.length-wd),'success');
   buildReport(siteRows);
 }
-function selDate(d){selectedDate=d;processData();}
+function selDate(d){selectedDate=d;document.getElementById('dateInput').value='';document.getElementById('weekInput').value='';processData();}
 function buildReport(rows){
   const su=siteCode.toUpperCase();
-  const filtered=rows.filter(r=>{if(selectedDate==='ALL')return true;if(!hV(r.actualDeparture))return true;return gDS(r.actualDeparture)===selectedDate;});
+  const filtered=rows.filter(r=>{
+    if(selectedDate==='ALL')return true;
+    if(selectedDate.startsWith('WEEK:')){const parts=selectedDate.split(':');const ws=parts[1],we=parts[2];const vd=gDS(r.actualDeparture);if(!vd)return true;return vd>=ws&&vd<=we;}
+    if(!hV(r.actualDeparture))return true;return gDS(r.actualDeparture)===selectedDate;
+  });
   const cptG={};filtered.forEach((row,i)=>{if(!hV(row.cpt)||!hV(row.actualDeparture))return;const cd=pDT(row.cpt),ad=pDT(row.actualDeparture);if(!cd||!ad)return;const k=cd.getTime();if(!cptG[k])cptG[k]=[];cptG[k].push({index:i,at:ad.getTime(),ct:cd.getTime()});});
   const cptLS=new Set();Object.values(cptG).forEach(g=>{if(!g.length)return;let l=g[0];for(let i=1;i<g.length;i++)if(g[i].at>l.at)l=g[i];if(l.at>l.ct)cptLS.add(l.index);});
   const vehicles=filtered.map((row,index)=>{
@@ -154,7 +182,7 @@ function buildReport(rows){
     return{vrid:row.vrid||'ROW-'+(index+1),lane:row.lane,category:cat.key,categoryLabel:cat.label,plannedSAT:pSAT,actualSAT:aSAT,plannedSDT:sdtD,actualSDT:aSDT,cpt,satCompliant:satOk,sdtCompliant:sdtOk,satEligible:satE};
   });
   let display=vehicles;if(shiftFilter!=='full')display=display.filter(v=>mS(v));if(categoryFilter!=='all')display=display.filter(v=>v.category===categoryFilter);
-  currentReport={date:selectedDate,siteCode:su,vehicles:display,allVehicles:vehicles};renderFilters(vehicles);renderReport();
+  currentReport={date:selectedDate,siteCode:su,vehicles:display,allVehicles:vehicles};renderFilters(vehicles);renderReport();renderLaneCompliance();renderDelayAnalysis();saveToHistory();renderHistory();
 }
 function mS(v){const t=v.actualSDT||v.actualSAT||v.plannedSDT||v.plannedSAT;if(!t)return true;const m=t.match(/(\d{1,2}):(\d{2})/);if(!m)return true;const tv=parseInt(m[1])*60+parseInt(m[2]);if(shiftFilter==='day')return tv>=510&&tv<1110;return tv>=1110||tv<270;}
 function renderFilters(allV){
@@ -176,9 +204,10 @@ function renderReport(){
   const satP=satE>0?Math.round(satC/satE*100):100,sdtP=sdtE>0?Math.round(sdtC/sdtE*100):100;
   const cm={};v.forEach(x=>{if(!cm[x.category])cm[x.category]={key:x.category,label:x.categoryLabel,total:0,satE:0,sdtE:0,satC:0,sdtC:0};const c=cm[x.category];c.total++;if(x.satEligible){c.satE++;if(x.satCompliant)c.satC++;}if(hV(x.plannedSDT)||hV(x.cpt)){c.sdtE++;if(x.sdtCompliant)c.sdtC++;}});
   const cats=Object.values(cm);const lA=v.filter(x=>!x.satCompliant&&x.satEligible),lD=v.filter(x=>!x.sdtCompliant&&(hV(x.plannedSDT)||hV(x.cpt)));
+  const dateLabel=selectedDate.startsWith('WEEK:')?'Week '+selectedDate.split(':')[1]+' to '+selectedDate.split(':')[2]:selectedDate;
   let h='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem">';
-  h+='<h2 style="font-size:1.2rem;font-weight:700;color:var(--text)">\u1F4CA Compliance Report — '+r.siteCode+' ('+r.date+')</h2>';
-  h+='<div style="display:flex;gap:0.5rem"><button class="btn btn-green" onclick="dlCSV()">\u1F4E5 CSV</button><button class="btn btn-purple" onclick="cpCSV()">\u1F4CB Copy</button></div></div>';
+  h+='<h2 style="font-size:1.2rem;font-weight:700;color:var(--text)">&#x1F4CA; Compliance Report \u2014 '+r.siteCode+' ('+dateLabel+')</h2>';
+  h+='<div style="display:flex;gap:0.5rem"><button class="btn btn-green" onclick="dlCSV()">&#x1F4E5; CSV</button><button class="btn btn-purple" onclick="cpCSV()">&#x1F4CB; Copy</button></div></div>';
   h+='<div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem"><div style="flex:1 1 300px"><div style="display:flex;gap:1.5rem;margin-bottom:1rem">';
   h+='<div style="flex:1;text-align:center"><div style="font-size:0.75rem;color:var(--subtext);margin-bottom:4px">Arrival Compliance</div><div style="font-size:2.5rem;font-weight:800;color:'+cC(satP)+'">'+satP+'%</div></div>';
   h+='<div style="flex:1;text-align:center"><div style="font-size:0.75rem;color:var(--subtext);margin-bottom:4px">Departure Compliance</div><div style="font-size:2.5rem;font-weight:800;color:'+cC(sdtP)+'">'+sdtP+'%</div></div></div>';
@@ -199,6 +228,99 @@ function renderReport(){
   if(!lA.length&&!lD.length)h+='<div style="margin-top:1.5rem;text-align:center;padding:1.5rem"><div style="font-size:2.5rem">\u2705</div><div style="font-weight:700;color:#16a34a;font-size:1.1rem;margin-top:0.5rem">100% Compliance!</div></div>';
   h+='</div>';document.getElementById('reportSection').innerHTML=h;
 }
+/* ===== LANE-WISE COMPLIANCE ===== */
+function renderLaneCompliance(){
+  if(!currentReport||!currentReport.vehicles.length){document.getElementById('laneSection').style.display='none';return;}
+  document.getElementById('laneSection').style.display='block';
+  const v=currentReport.vehicles;
+  const lm={};v.forEach(x=>{const lane=x.lane||'Unknown';if(!lm[lane])lm[lane]={total:0,satOk:0,sdtOk:0,satE:0,sdtE:0};lm[lane].total++;if(x.satEligible){lm[lane].satE++;if(x.satCompliant)lm[lane].satOk++;}if(hV(x.plannedSDT)||hV(x.cpt)){lm[lane].sdtE++;if(x.sdtCompliant)lm[lane].sdtOk++;}});
+  const lanes=Object.entries(lm).map(([lane,d])=>({lane,total:d.total,satPct:d.satE>0?Math.round(d.satOk/d.satE*100):-1,sdtPct:d.sdtE>0?Math.round(d.sdtOk/d.sdtE*100):-1})).sort((a,b)=>{const as=a.satPct>=0?a.satPct:999,bs=b.satPct>=0?b.satPct:999;return as-bs;});
+  let h='<div class="card"><div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.5rem">&#x1F6E4;\uFE0F Lane-wise Compliance ('+lanes.length+' lanes)</div>';
+  h+='<div style="font-size:0.75rem;color:var(--subtext);margin-bottom:1rem">Sorted by worst arrival compliance first. N/A = no planned time.</div>';
+  h+='<div style="overflow-x:auto;max-height:400px;overflow-y:auto"><table class="lane-table"><thead><tr><th>Lane</th><th style="text-align:center">Vehicles</th><th style="text-align:center">Arrival %</th><th style="text-align:center">Departure %</th><th style="text-align:center">Status</th></tr></thead><tbody>';
+  lanes.forEach(l=>{
+    const worst=Math.min(l.satPct>=0?l.satPct:100,l.sdtPct>=0?l.sdtPct:100);
+    const icon=worst>=95?'\u2705':worst>=85?'\u26A0\uFE0F':'\u1F6A8';
+    h+='<tr><td style="font-weight:600;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+l.lane+'</td>';
+    h+='<td style="text-align:center">'+l.total+'</td>';
+    h+='<td style="text-align:center"><span class="delay-badge" style="background:'+getBg(l.satPct)+';color:'+getClr(l.satPct)+'">'+(l.satPct>=0?l.satPct+'%':'N/A')+'</span></td>';
+    h+='<td style="text-align:center"><span class="delay-badge" style="background:'+getBg(l.sdtPct)+';color:'+getClr(l.sdtPct)+'">'+(l.sdtPct>=0?l.sdtPct+'%':'N/A')+'</span></td>';
+    h+='<td style="text-align:center">'+icon+'</td></tr>';
+  });
+  h+='</tbody></table></div></div>';
+  document.getElementById('laneSection').innerHTML=h;
+}
+function getBg(p){return p<0?'#f3f4f6':p>=95?'#f0fdf4':p>=85?'#fffbeb':'#fef2f2';}
+function getClr(p){return p<0?'#6b7280':p>=95?'#16a34a':p>=85?'#f59e0b':'#dc3545';}
+/* ===== DELAY ANALYSIS ===== */
+function renderDelayAnalysis(){
+  if(!currentReport||!currentReport.vehicles.length){document.getElementById('delaySection').style.display='none';return;}
+  const v=currentReport.vehicles;const delays=[];
+  v.forEach(x=>{
+    if(!x.satCompliant&&x.satEligible){const ref=hV(x.plannedSAT)?x.plannedSAT:x.cpt;const p=pDT(ref),a=pDT(x.actualSAT);if(p&&a){const m=Math.round((a.getTime()-p.getTime())/60000);if(m>0)delays.push({vrid:x.vrid,lane:x.lane,cat:x.categoryLabel,type:'Arrival',mins:m});}else delays.push({vrid:x.vrid,lane:x.lane,cat:x.categoryLabel,type:'Arrival',mins:0});}
+    if(!x.sdtCompliant&&(hV(x.plannedSDT)||hV(x.cpt))){const dl=hV(x.plannedSDT)?x.plannedSDT:x.cpt;const p=pDT(dl),a=pDT(x.actualSDT);if(p&&a){const m=Math.round((a.getTime()-p.getTime())/60000);if(m>0)delays.push({vrid:x.vrid,lane:x.lane,cat:x.categoryLabel,type:'Departure',mins:m});}else delays.push({vrid:x.vrid,lane:x.lane,cat:x.categoryLabel,type:'Departure',mins:0});}
+  });
+  delays.sort((a,b)=>b.mins-a.mins);
+  if(!delays.length){document.getElementById('delaySection').style.display='block';document.getElementById('delaySection').innerHTML='<div class="card" style="text-align:center;color:#16a34a;font-weight:600;padding:1rem">\u2705 No delays detected \u2014 all vehicles on time!</div>';return;}
+  document.getElementById('delaySection').style.display='block';
+  const crit=delays.filter(d=>d.mins>=120).length;
+  const avg=Math.round(delays.reduce((s,d)=>s+d.mins,0)/delays.length);
+  const maxD=delays[0].mins;
+  const catD={};delays.forEach(d=>{if(!catD[d.cat])catD[d.cat]={count:0,total:0};catD[d.cat].count++;catD[d.cat].total+=d.mins;});
+  let h='<div class="card"><div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem">\u23F1\uFE0F Delay Analysis</div>';
+  h+='<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">';
+  h+='<div style="flex:1 1 120px;background:#fef2f2;border-radius:8px;padding:0.75rem;text-align:center"><div style="font-size:0.7rem;color:#991b1b">Total Delays</div><div style="font-size:1.5rem;font-weight:800;color:#dc3545">'+delays.length+'</div></div>';
+  h+='<div style="flex:1 1 120px;background:#fffbeb;border-radius:8px;padding:0.75rem;text-align:center"><div style="font-size:0.7rem;color:#92400e">Avg Delay</div><div style="font-size:1.5rem;font-weight:800;color:#f59e0b">'+fmtMins(avg)+'</div></div>';
+  h+='<div style="flex:1 1 120px;background:#fef2f2;border-radius:8px;padding:0.75rem;text-align:center"><div style="font-size:0.7rem;color:#991b1b">Max Delay</div><div style="font-size:1.5rem;font-weight:800;color:#dc3545">'+fmtMins(maxD)+'</div></div>';
+  h+='<div style="flex:1 1 120px;background:'+(crit>0?'#fef2f2':'#f0fdf4')+';border-radius:8px;padding:0.75rem;text-align:center"><div style="font-size:0.7rem;color:'+(crit>0?'#991b1b':'#166534')+'">Critical (>2h)</div><div style="font-size:1.5rem;font-weight:800;color:'+(crit>0?'#dc3545':'#16a34a')+'">'+crit+'</div></div>';
+  h+='</div>';
+  h+='<div style="margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:600;color:#555;margin-bottom:0.5rem">Category Breakdown:</div><div style="display:flex;gap:0.5rem;flex-wrap:wrap">';
+  Object.entries(catD).forEach(([cat,d])=>{h+='<div style="background:#f8f9fb;border-radius:6px;padding:0.4rem 0.75rem;font-size:0.75rem"><strong>'+cat+'</strong>: '+d.count+' delays, avg '+fmtMins(Math.round(d.total/d.count))+'</div>';});
+  h+='</div></div>';
+  h+='<div style="font-size:0.8rem;font-weight:600;color:#555;margin-bottom:0.5rem">Top Delays:</div>';
+  h+='<div style="overflow-x:auto;max-height:200px;overflow-y:auto;border-radius:6px;border:1px solid #e2e8f0"><table class="lane-table"><thead><tr><th>VR ID</th><th>Lane</th><th>Type</th><th>Category</th><th style="text-align:right">Delay</th></tr></thead><tbody>';
+  delays.slice(0,15).forEach((d,i)=>{
+    h+='<tr style="background:'+(i%2===0?'#fff':'#f9fafb')+'"><td style="font-weight:600">'+d.vrid+'</td><td>'+d.lane+'</td>';
+    h+='<td><span style="background:'+(d.type==='Arrival'?'#dbeafe':'#fde68a')+';padding:1px 6px;border-radius:4px;font-size:0.72rem">'+(d.type==='Arrival'?'\u1F69B Arrival':'\u1F680 Departure')+'</span></td>';
+    h+='<td>'+d.cat+'</td><td style="text-align:right;font-weight:700;color:'+delClr(d.mins)+'">'+fmtMins(d.mins)+(d.mins>=120?' \u1F6A8':'')+'</td></tr>';
+  });
+  h+='</tbody></table></div></div>';
+  document.getElementById('delaySection').innerHTML=h;
+}
+function fmtMins(m){if(!m)return '0 min';if(m<60)return m+' min';const h=Math.floor(m/60),r=m%60;return r>0?h+'h '+r+'m':h+'h';}
+function delClr(m){return m>=120?'#dc3545':m>=60?'#ff6b35':m>=30?'#ffc107':'#6b7280';}
+/* ===== HISTORY ===== */
+function saveToHistory(){
+  if(!currentReport||!currentReport.vehicles.length)return;
+  const v=currentReport.vehicles;
+  const satE=v.filter(x=>x.satEligible).length,sdtE=v.filter(x=>hV(x.plannedSDT)||hV(x.cpt)).length;
+  const satC=v.filter(x=>x.satCompliant&&x.satEligible).length,sdtC=v.filter(x=>x.sdtCompliant&&(hV(x.plannedSDT)||hV(x.cpt))).length;
+  const satP=satE>0?Math.round(satC/satE*100):100,sdtP=sdtE>0?Math.round(sdtC/sdtE*100):100;
+  const dateLabel=selectedDate.startsWith('WEEK:')?selectedDate.split(':')[1]:selectedDate==='ALL'?new Date().toISOString().split('T')[0]:selectedDate;
+  const entry={date:dateLabel,site:currentReport.siteCode,vehicles:v.length,arrPct:satP,depPct:sdtP,timestamp:new Date().toLocaleString()};
+  const idx=reportHistory.findIndex(h=>h.date===entry.date&&h.site===entry.site);
+  if(idx>=0)reportHistory[idx]=entry;else reportHistory.unshift(entry);
+  if(reportHistory.length>50)reportHistory=reportHistory.slice(0,50);
+  try{localStorage.setItem('yms_history',JSON.stringify(reportHistory));}catch(e){}
+}
+function renderHistory(){
+  if(!reportHistory.length){document.getElementById('historySection').style.display='none';return;}
+  document.getElementById('historySection').style.display='block';
+  let h='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div style="font-size:1rem;font-weight:700;color:var(--text)">&#x1F4CB; Report History ('+reportHistory.length+')</div><button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="clearHistory()">\u1F5D1\uFE0F Clear</button></div>';
+  h+='<div style="overflow-x:auto;max-height:300px;overflow-y:auto"><table class="history-table"><thead><tr><th>Date</th><th>Site</th><th>Vehicles</th><th>Arrival %</th><th>Departure %</th><th>Status</th><th>Saved At</th></tr></thead><tbody>';
+  reportHistory.forEach(r=>{
+    const overall=Math.round((r.arrPct+r.depPct)/2);
+    const statusIcon=overall>=95?'\u2705':overall>=85?'\u26A0\uFE0F':'\u1F6A8';
+    h+='<tr><td style="font-weight:600">'+r.date+'</td><td>'+r.site+'</td><td>'+r.vehicles+'</td>';
+    h+='<td style="color:'+cC(r.arrPct)+';font-weight:700">'+r.arrPct+'%</td>';
+    h+='<td style="color:'+cC(r.depPct)+';font-weight:700">'+r.depPct+'%</td>';
+    h+='<td>'+statusIcon+'</td><td style="font-size:0.72rem;color:var(--subtext)">'+r.timestamp+'</td></tr>';
+  });
+  h+='</tbody></table></div></div>';
+  document.getElementById('historySection').innerHTML=h;
+}
+function clearHistory(){if(confirm('Clear all history?')){reportHistory=[];try{localStorage.removeItem('yms_history');}catch(e){}renderHistory();}}
+/* ===== UTILITIES ===== */
 function hV(s){return!!(s&&s!=='-'&&s.trim().length>0);}
 function pDT(v){if(!v||!v.trim())return null;const m=v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})\s+(\d{1,2}):(\d{2})$/);if(m){let y=parseInt(m[3]);if(y<100)y+=2000;return new Date(y,parseInt(m[1])-1,parseInt(m[2]),parseInt(m[4]),parseInt(m[5]),0);}const d=new Date(v);return isNaN(d.getTime())?null:d;}
 function gDS(v){const d=pDT(v);if(!d)return null;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -210,6 +332,7 @@ function showStatus(msg,type){const el=document.getElementById('uploadStatus');c
 function genCSV(){if(!currentReport)return '';const h=['VR ID','Lane','Category','Planned Arrival','Actual Arrival','SAT OK','Deadline','Actual Departure','SDT OK'];const rows=currentReport.vehicles.map(v=>[v.vrid,v.lane,v.categoryLabel,v.plannedSAT,v.actualSAT,v.satCompliant?'Yes':'No',v.plannedSDT,v.actualSDT,v.sdtCompliant?'Yes':'No'].map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(','));return[h.join(','),...rows].join('\n');}
 function dlCSV(){const csv=genCSV();if(!csv)return;const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='YMS_Report_'+siteCode+'_'+selectedDate+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
 function cpCSV(){const csv=genCSV();if(!csv)return;navigator.clipboard.writeText(csv).then(()=>alert('\u2705 Copied to clipboard!')).catch(()=>alert('\u274C Clipboard not available.'));}
+renderHistory();
 </script>
 </body>
 </html>
