@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YMS Compliance Tool — Standalone</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f2f5;--card:#fff;--text:#1a3a5c;--subtext:#666;--border:#e2e8f0;--primary:#1a73e8;--green:#28a745;--yellow:#ffc107;--red:#dc3545}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+body.dark{--bg:#1a1a2e;--card:#16213e;--text:#e0e0e0;--subtext:#a0a0a0;--border:#2a4a6a}
+.container{max-width:1100px;margin:0 auto;padding:1rem}
+.header{background:linear-gradient(135deg,#1a3a5c,#1a73e8);color:#fff;padding:1.25rem 2rem;border-radius:10px;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.header h1{font-size:1.4rem;font-weight:700}
+.header-controls{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}
+.btn{padding:0.5rem 1rem;border:none;border-radius:6px;font-weight:600;font-size:0.82rem;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem}
+.btn:hover{opacity:0.85}
+.btn-primary{background:#1a73e8;color:#fff}
+.btn-green{background:#28a745;color:#fff}
+.btn-orange{background:#ff9900;color:#fff}
+.btn-purple{background:#6366f1;color:#fff}
+.btn-dark{background:#333;color:#fff}
+.card{background:var(--card);border-radius:10px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:1.5rem;border:1px solid var(--border)}
+.drop-zone{border:2px dashed #ccc;border-radius:10px;padding:2.5rem;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:1rem}
+.drop-zone:hover,.drop-zone.active{border-color:#1a73e8;background:rgba(26,115,232,0.05)}
+.drop-zone.success{border-color:#28a745;background:rgba(40,167,69,0.05)}
+input[type="text"]{padding:0.45rem 0.7rem;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-weight:700;text-align:center;width:90px;text-transform:uppercase;background:var(--card);color:var(--text)}
+.pills{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem}
+.pill{padding:0.4rem 0.8rem;border-radius:20px;border:none;cursor:pointer;font-size:0.8rem;font-weight:600}
+.pill.active{background:#1a73e8;color:#fff}
+.pill:not(.active){background:#e2e8f0;color:#374151}
+.shift-pills{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.shift-pill{padding:0.5rem 1rem;border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:0.82rem;font-weight:600;background:var(--card);color:var(--text)}
+.shift-pill.active{border-color:#1a73e8;background:rgba(26,115,232,0.1);color:#1a73e8}
+.comp-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.comp-table th{padding:0.6rem 0.75rem;background:#1a3a5c;color:#fff;font-weight:600;text-align:center}
+.comp-table th:first-child{text-align:left}
+.comp-table td{padding:0.55rem 0.75rem;text-align:center;border-bottom:1px solid var(--border)}
+.comp-table td:first-child{text-align:left;font-weight:600}
+.comp-table tr:nth-child(even){background:rgba(0,0,0,0.02)}
+.comp-table .total-row{background:#e8f0fe;border-top:2px solid #1a73e8;font-weight:700}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-weight:700;font-size:0.8rem;color:#fff}
+.late-table{width:100%;border-collapse:collapse;font-size:0.78rem}
+.late-table th{padding:0.5rem 0.6rem;text-align:left;background:#fef2f2;color:#991b1b;font-weight:600;position:sticky;top:0}
+.late-table td{padding:0.45rem 0.6rem;border-bottom:1px solid #f1f5f9}
+.late-section{flex:1 1 400px}
+.late-container{max-height:300px;overflow-y:auto;border-radius:8px;border:1px solid #fecaca}
+.success-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:1rem;text-align:center;color:#16a34a;font-weight:600}
+.info-box{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:1rem;font-size:0.82rem;color:#78350f}
+@media(max-width:768px){.container{padding:0.5rem}.header{padding:1rem;flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <div class="header">
+    <div>
+      <h1>&#x1F69B; YMS Compliance Tool</h1>
+      <p style="font-size:0.8rem;opacity:0.8;margin-top:4px" id="subtitle">Standalone Version — Works offline in any browser</p>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="siteInput" value="GURX" placeholder="Site Code" onkeydown="if(event.key==='Enter')applySiteCode()">
+      <button class="btn btn-primary" onclick="applySiteCode()">&#x1F50D;</button>
+      <button class="btn btn-orange" onclick="window.open('https://trans-logistics-eu.amazon.com/fmc/execution','_blank')">&#x1F517; Open FMC</button>
+      <button class="btn btn-dark" onclick="toggleDark()">&#x1F319; Dark</button>
+    </div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;font-size:1.05rem;margin-bottom:1rem;color:var(--text)">&#x1F4C2; Upload FMC Excel File</div>
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('active')" ondragleave="this.classList.remove('active')" ondrop="handleDrop(event)">
+      <div style="font-size:2.5rem;margin-bottom:0.5rem">&#x1F4C1;</div>
+      <div style="font-weight:500;color:var(--text)">Drag & drop Excel file here, or click to browse</div>
+      <div style="font-size:0.8rem;color:var(--subtext);margin-top:0.5rem">Any Excel with "YMS Raw Data" sheet</div>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileSelect(event)">
+    <div id="uploadStatus"></div>
+    <div id="datePills"></div>
+    <div class="info-box" style="margin-top:1rem">
+      <strong>&#x1F4A1; How to use:</strong><br>
+      1. Export Excel from FMC<br>
+      2. Drag & drop here — instantly processed<br>
+      3. Share this HTML file via email/SharePoint — no server needed!
+    </div>
+  </div>
+  <div id="filtersSection" style="display:none"><div class="card"><div style="font-weight:600;margin-bottom:0.75rem">&#x1F504; Shift & Category Filter</div><div class="shift-pills" id="shiftPills"></div><div class="shift-pills" id="catPills"></div></div></div>
+  <div id="reportSection" style="display:none"></div>
+</div>
+<script>
+let siteCode='GURX',parsedRows=[],currentReport=null,selectedDate='ALL',shiftFilter='full',categoryFilter='all';
+const SHIPPER_CATEGORIES=[{key:'milkrun',label:'Milkrun',keywords:['atsoutbound','outboundamzl']},{key:'air',label:'Air',keywords:['outboundairshuttle']},{key:'longhaul',label:'Long-Haul',keywords:['outboundamazonmanaged']},{key:'rail',label:'Rail',keywords:['outboundinrail']}];
+function toggleDark(){document.body.classList.toggle('dark')}
+function applySiteCode(){const v=document.getElementById('siteInput').value.trim().toUpperCase();if(v&&v!==siteCode){siteCode=v;document.getElementById('subtitle').textContent=siteCode+' Facility';if(parsedRows.length)processData();}}
+function handleDrop(e){e.preventDefault();document.getElementById('dropZone').classList.remove('active');if(e.dataTransfer.files.length)processFile(e.dataTransfer.files[0]);}
+function handleFileSelect(e){if(e.target.files.length)processFile(e.target.files[0]);}
+function processFile(file){
+  const ext=file.name.toLowerCase().split('.').pop();
+  if(!['xlsx','xls','csv'].includes(ext)){showStatus('\u274C Please upload Excel file.','error');return;}
+  document.getElementById('dropZone').innerHTML='<div style="font-size:2rem">\u2705</div><div style="font-weight:600;color:#16a34a">'+file.name+'</div><div style="font-size:0.75rem;color:#666;margin-top:4px">Click to upload different file</div>';
+  document.getElementById('dropZone').classList.add('success');
+  showStatus('\u23F3 Processing...','info');
+  const reader=new FileReader();
+  reader.onload=function(ev){try{
+    const data=new Uint8Array(ev.target.result);const wb=XLSX.read(data,{type:'array',cellDates:false,raw:true});
+    let targetSheet=wb.SheetNames.find(n=>{const l=n.toLowerCase().replace(/[^a-z0-9]/g,'');return l.includes('ymsrawdata')||l.includes('ymsraw')||l.includes('rawdata');});
+    if(!targetSheet)targetSheet=wb.SheetNames[0];
+    const sheet=wb.Sheets[targetSheet];const rawData=XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:true});
+    if(rawData.length<2){showStatus('\u274C No data found.','error');return;}
+    let headerRowIdx=0;
+    for(let i=0;i<Math.min(10,rawData.length);i++){const rs=(rawData[i]||[]).map(c=>String(c||'').toLowerCase()).join('|');if(rs.includes('vr id')||rs.includes('action type')||rs.includes('actual departure')){headerRowIdx=i;break;}}
+    const hdr=rawData[headerRowIdx].map(c=>String(c||'').toLowerCase().trim());
+    const ci={vrid:fI(hdr,['vr id','vrid']),lane:fI(hdr,['lane']),stop:fI(hdr,['stop']),actionType:fI(hdr,['action type','actiontype']),cpt:fI(hdr,['cpt']),pDA:fI(hdr,['planned dock arrival']),pYA:fI(hdr,['planned yard arrival']),aA:fI(hdr,['actual arrival']),pDD:fI(hdr,['planned dock departure']),pYD:fI(hdr,['planned yard departure']),aD:fI(hdr,['actual departure']),sa:fI(hdr,['shipper accounts','shipper account','transportation mode'])};
+    parsedRows=[];
+    for(let i=headerRowIdx+1;i<rawData.length;i++){const r=rawData[i];if(!r||!r.length)continue;const stop=cs(r,ci.stop);if(!stop)continue;
+      parsedRows.push({vrid:cs(r,ci.vrid),lane:cs(r,ci.lane),stop,actionType:cs(r,ci.actionType),cpt:cs(r,ci.cpt),plannedDockArrival:cs(r,ci.pDA),plannedYardArrival:cs(r,ci.pYA),actualArrival:cs(r,ci.aA),plannedDockDeparture:cs(r,ci.pDD),plannedYardDeparture:cs(r,ci.pYD),actualDeparture:cs(r,ci.aD),shipperAccount:cs(r,ci.sa)});}
+    if(!parsedRows.length){showStatus('\u274C No rows found.','error');return;}
+    processData();
+  }catch(err){showStatus('\u274C Error: '+err.message,'error');}};
+  reader.readAsArrayBuffer(file);
+}
+function fI(h,c){for(const x of c){const i=h.findIndex(v=>v===x||v.includes(x));if(i>=0)return i;}return -1;}
+function cs(row,idx){if(idx<0||idx>=row.length)return '';const v=row[idx];if(v==null)return '';if(typeof v==='number'&&v>40000&&v<60000){const d=exD(v);if(d)return(d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');}return String(v).trim();}
+function exD(s){const days=Math.floor(s),frac=s-days,ts=Math.round(frac*86400),h=Math.floor(ts/3600),m=Math.floor((ts%3600)/60);const ep=new Date(1899,11,30);const d=new Date(ep.getTime()+days*86400000);d.setHours(h,m,0,0);return isNaN(d.getTime())?null:d;}
+function processData(){
+  const su=siteCode.toUpperCase();
+  const siteRows=parsedRows.filter(r=>{if(r.stop.toUpperCase().trim()!==su)return false;if(r.actionType.toLowerCase().trim()!=='pickup')return false;const p=r.lane.toUpperCase().trim().split('->').map(s=>s.trim());const i=p.indexOf(su);return i!==p.length-1;});
+  if(!siteRows.length){const stops=[...new Set(parsedRows.map(r=>r.stop.toUpperCase().trim()).filter(Boolean))];showStatus('\u274C No data for "'+su+'". Stops: '+stops.slice(0,15).join(', '),'error');document.getElementById('filtersSection').style.display='none';document.getElementById('reportSection').style.display='none';return;}
+  const dc={};let wd=0;siteRows.forEach(r=>{if(hV(r.actualDeparture)){wd++;const ds=gDS(r.actualDeparture);if(ds)dc[ds]=(dc[ds]||0)+1;}});
+  const dates=Object.entries(dc).sort((a,b)=>a[0].localeCompare(b[0]));
+  let ph='<div style="font-size:0.8rem;font-weight:600;margin-bottom:0.5rem">\u1F4C5 Filter by Date:</div><div class="pills">';
+  ph+='<button class="pill '+(selectedDate==='ALL'?'active':'')+'" onclick="selDate(\'ALL\')">ALL ('+wd+')</button>';
+  dates.forEach(([d,c])=>{ph+='<button class="pill '+(selectedDate===d?'active':'')+'" onclick="selDate(\''+d+'\')">'+d+' ('+c+')</button>';});
+  ph+='</div>';document.getElementById('datePills').innerHTML=ph;
+  showStatus('\u2705 '+su+': '+siteRows.length+' vehicles | Departed: '+wd+' | Pending: '+(siteRows.length-wd),'success');
+  buildReport(siteRows);
+}
+function selDate(d){selectedDate=d;processData();}
+function buildReport(rows){
+  const su=siteCode.toUpperCase();
+  const filtered=rows.filter(r=>{if(selectedDate==='ALL')return true;if(!hV(r.actualDeparture))return true;return gDS(r.actualDeparture)===selectedDate;});
+  const cptG={};filtered.forEach((row,i)=>{if(!hV(row.cpt)||!hV(row.actualDeparture))return;const cd=pDT(row.cpt),ad=pDT(row.actualDeparture);if(!cd||!ad)return;const k=cd.getTime();if(!cptG[k])cptG[k]=[];cptG[k].push({index:i,at:ad.getTime(),ct:cd.getTime()});});
+  const cptLS=new Set();Object.values(cptG).forEach(g=>{if(!g.length)return;let l=g[0];for(let i=1;i<g.length;i++)if(g[i].at>l.at)l=g[i];if(l.at>l.ct)cptLS.add(l.index);});
+  const vehicles=filtered.map((row,index)=>{
+    const cat=categ(row.shipperAccount);const lp=row.lane.toUpperCase().split('->').map(s=>s.trim());const si=lp.indexOf(su);const isCl=lp.length>=3&&si>0&&si<lp.length-1;
+    const pSAT=row.plannedYardArrival||row.plannedDockArrival||'';const aSAT=row.actualArrival||'';const cpt=row.cpt||'';
+    let satOk,satE=hV(pSAT);
+    if(!hV(pSAT)){if(cat.key==='longhaul'&&hV(aSAT)&&hV(cpt)){satE=true;satOk=isAC(cpt,aSAT);}else satOk=true;}
+    else if(!hV(aSAT))satOk=false;else satOk=isAC(pSAT,aSAT);
+    let sdtD='';if(isCl){sdtD=row.plannedDockDeparture||row.plannedYardDeparture||'';if(!hV(sdtD)&&hV(cpt))sdtD=cpt;}
+    else if(cat.key==='longhaul'&&hV(cpt))sdtD=cpt;
+    else{sdtD=row.plannedDockDeparture||row.plannedYardDeparture||'';if(!hV(sdtD)&&hV(cpt))sdtD=cpt;}
+    const aSDT=row.actualDeparture||'';let sdtOk;
+    if(!hV(sdtD))sdtOk=true;else if(!hV(aSDT))sdtOk=false;else sdtOk=isDC(sdtD,aSDT);
+    if(cptLS.has(index)&&!isCl)sdtOk=false;
+    return{vrid:row.vrid||'ROW-'+(index+1),lane:row.lane,category:cat.key,categoryLabel:cat.label,plannedSAT:pSAT,actualSAT:aSAT,plannedSDT:sdtD,actualSDT:aSDT,cpt,satCompliant:satOk,sdtCompliant:sdtOk,satEligible:satE};
+  });
+  let display=vehicles;if(shiftFilter!=='full')display=display.filter(v=>mS(v));if(categoryFilter!=='all')display=display.filter(v=>v.category===categoryFilter);
+  currentReport={date:selectedDate,siteCode:su,vehicles:display,allVehicles:vehicles};renderFilters(vehicles);renderReport();
+}
+function mS(v){const t=v.actualSDT||v.actualSAT||v.plannedSDT||v.plannedSAT;if(!t)return true;const m=t.match(/(\d{1,2}):(\d{2})/);if(!m)return true;const tv=parseInt(m[1])*60+parseInt(m[2]);if(shiftFilter==='day')return tv>=510&&tv<1110;return tv>=1110||tv<270;}
+function renderFilters(allV){
+  document.getElementById('filtersSection').style.display='block';
+  const sh=[{k:'full',l:'Full Day'},{k:'day',l:'\u2600\uFE0F Day (08:30-18:30)'},{k:'night',l:'\u1F319 Night (18:30-04:30)'}];
+  document.getElementById('shiftPills').innerHTML=sh.map(s=>'<button class="shift-pill '+(shiftFilter===s.k?'active':'')+'" onclick="setSh(\''+s.k+'\')">'+s.l+'</button>').join('');
+  const cats=[{k:'all',l:'All'},...SHIPPER_CATEGORIES.map(c=>({k:c.key,l:c.label}))];
+  const cnt={};allV.forEach(v=>{cnt[v.category]=(cnt[v.category]||0)+1;});
+  document.getElementById('catPills').innerHTML=cats.map(c=>{const n=c.k==='all'?allV.length:(cnt[c.k]||0);return '<button class="shift-pill '+(categoryFilter===c.k?'active':'')+'" onclick="setCt(\''+c.k+'\')">'+c.l+' ('+n+')</button>';}).join('');
+}
+function setSh(s){shiftFilter=s;processData();}
+function setCt(c){categoryFilter=c;processData();}
+function renderReport(){
+  if(!currentReport){document.getElementById('reportSection').style.display='none';return;}
+  document.getElementById('reportSection').style.display='block';
+  const r=currentReport,v=r.vehicles;
+  const satE=v.filter(x=>x.satEligible).length,sdtE=v.filter(x=>hV(x.plannedSDT)||hV(x.cpt)).length;
+  const satC=v.filter(x=>x.satCompliant&&x.satEligible).length,sdtC=v.filter(x=>x.sdtCompliant&&(hV(x.plannedSDT)||hV(x.cpt))).length;
+  const satP=satE>0?Math.round(satC/satE*100):100,sdtP=sdtE>0?Math.round(sdtC/sdtE*100):100;
+  const cm={};v.forEach(x=>{if(!cm[x.category])cm[x.category]={key:x.category,label:x.categoryLabel,total:0,satE:0,sdtE:0,satC:0,sdtC:0};const c=cm[x.category];c.total++;if(x.satEligible){c.satE++;if(x.satCompliant)c.satC++;}if(hV(x.plannedSDT)||hV(x.cpt)){c.sdtE++;if(x.sdtCompliant)c.sdtC++;}});
+  const cats=Object.values(cm);const lA=v.filter(x=>!x.satCompliant&&x.satEligible),lD=v.filter(x=>!x.sdtCompliant&&(hV(x.plannedSDT)||hV(x.cpt)));
+  let h='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem">';
+  h+='<h2 style="font-size:1.2rem;font-weight:700;color:var(--text)">\u1F4CA Compliance Report — '+r.siteCode+' ('+r.date+')</h2>';
+  h+='<div style="display:flex;gap:0.5rem"><button class="btn btn-green" onclick="dlCSV()">\u1F4E5 CSV</button><button class="btn btn-purple" onclick="cpCSV()">\u1F4CB Copy</button></div></div>';
+  h+='<div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem"><div style="flex:1 1 300px"><div style="display:flex;gap:1.5rem;margin-bottom:1rem">';
+  h+='<div style="flex:1;text-align:center"><div style="font-size:0.75rem;color:var(--subtext);margin-bottom:4px">Arrival Compliance</div><div style="font-size:2.5rem;font-weight:800;color:'+cC(satP)+'">'+satP+'%</div></div>';
+  h+='<div style="flex:1;text-align:center"><div style="font-size:0.75rem;color:var(--subtext);margin-bottom:4px">Departure Compliance</div><div style="font-size:2.5rem;font-weight:800;color:'+cC(sdtP)+'">'+sdtP+'%</div></div></div>';
+  h+='<div style="background:rgba(0,0,0,0.03);border-radius:8px;padding:1rem;font-size:0.82rem"><table style="width:100%"><tr><td style="font-weight:600">Total Vehicles</td><td style="text-align:right;font-weight:700">'+v.length+'</td></tr><tr><td style="color:var(--subtext)">Arrival Eligible</td><td style="text-align:right;font-weight:600">'+satE+'</td></tr><tr><td style="color:var(--subtext)">Departure Eligible</td><td style="text-align:right;font-weight:600">'+sdtE+'</td></tr></table></div></div>';
+  h+='<div style="flex:1 1 320px"><table class="comp-table"><thead><tr><th>Vehicle Type</th><th>Count</th><th>Arrival</th><th>Departure</th></tr></thead><tbody>';
+  cats.forEach(c=>{const sp=c.satE>0?Math.round(c.satC/c.satE*1000)/10:100;const dp=c.sdtE>0?Math.round(c.sdtC/c.sdtE*1000)/10:100;h+='<tr><td>'+c.label+'</td><td>'+c.total+'</td><td><span class="badge" style="background:'+cC(sp)+'">'+sp+'%</span></td><td><span class="badge" style="background:'+cC(dp)+'">'+dp+'%</span></td></tr>';});
+  h+='<tr class="total-row"><td>TOTAL</td><td>'+v.length+'</td><td style="color:'+cC(satP)+';font-weight:800">'+satP+'%</td><td style="color:'+cC(sdtP)+';font-weight:800">'+sdtP+'%</td></tr></tbody></table></div></div>';
+  h+='<div style="border-top:1px solid var(--border);margin:1.5rem 0"></div>';
+  h+='<div style="display:flex;gap:1.5rem;flex-wrap:wrap">';
+  h+='<div class="late-section"><h3 style="color:#dc3545;font-size:0.95rem;margin-bottom:0.75rem">\u26A0\uFE0F Late Arrivals: '+lA.length+'</h3>';
+  if(!lA.length)h+='<div class="success-box">\u2705 No late arrivals</div>';
+  else{h+='<div class="late-container"><table class="late-table"><thead><tr><th>VR ID</th><th>Lane</th><th>Planned</th><th>Actual</th></tr></thead><tbody>';lA.forEach(x=>{h+='<tr><td style="font-weight:600">'+x.vrid+'</td><td>'+x.lane+'</td><td>'+x.plannedSAT+'</td><td style="color:#dc3545;font-weight:600">'+x.actualSAT+'</td></tr>';});h+='</tbody></table></div>';}
+  h+='</div>';
+  h+='<div class="late-section"><h3 style="color:#dc3545;font-size:0.95rem;margin-bottom:0.75rem">\u26A0\uFE0F Late Departures: '+lD.length+'</h3>';
+  if(!lD.length)h+='<div class="success-box">\u2705 No late departures</div>';
+  else{h+='<div class="late-container"><table class="late-table"><thead><tr><th>VR ID</th><th>Lane</th><th>Deadline</th><th>Actual</th></tr></thead><tbody>';lD.forEach(x=>{h+='<tr><td style="font-weight:600">'+x.vrid+'</td><td>'+x.lane+'</td><td>'+x.plannedSDT+'</td><td style="color:#dc3545;font-weight:600">'+x.actualSDT+'</td></tr>';});h+='</tbody></table></div>';}
+  h+='</div></div>';
+  if(!lA.length&&!lD.length)h+='<div style="margin-top:1.5rem;text-align:center;padding:1.5rem"><div style="font-size:2.5rem">\u2705</div><div style="font-weight:700;color:#16a34a;font-size:1.1rem;margin-top:0.5rem">100% Compliance!</div></div>';
+  h+='</div>';document.getElementById('reportSection').innerHTML=h;
+}
+function hV(s){return!!(s&&s!=='-'&&s.trim().length>0);}
+function pDT(v){if(!v||!v.trim())return null;const m=v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})\s+(\d{1,2}):(\d{2})$/);if(m){let y=parseInt(m[3]);if(y<100)y+=2000;return new Date(y,parseInt(m[1])-1,parseInt(m[2]),parseInt(m[4]),parseInt(m[5]),0);}const d=new Date(v);return isNaN(d.getTime())?null:d;}
+function gDS(v){const d=pDT(v);if(!d)return null;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function isAC(p,a){const pd=pDT(p),ad=pDT(a);if(!pd||!ad)return false;return(ad.getTime()-pd.getTime())/60000<=30;}
+function isDC(dl,a){const pd=pDT(dl),ad=pDT(a);if(!pd||!ad)return false;return ad.getTime()<=pd.getTime();}
+function categ(s){const t=s.trim().toLowerCase();for(const c of SHIPPER_CATEGORIES){for(const k of c.keywords)if(t===k)return c;for(const k of c.keywords)if(t.includes(k))return c;}return{key:'other',label:'Other',keywords:[]};}
+function cC(p){return p>=95?'#28a745':p>=85?'#ffc107':'#dc3545';}
+function showStatus(msg,type){const el=document.getElementById('uploadStatus');const c={error:'background:#fef2f2;border:1px solid #fecaca;color:#dc3545',success:'background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a',info:'background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8'};el.innerHTML='<div style="'+c[type]+';border-radius:6px;padding:0.6rem 1rem;margin-top:0.75rem;font-size:0.85rem;font-weight:500">'+msg+'</div>';}
+function genCSV(){if(!currentReport)return '';const h=['VR ID','Lane','Category','Planned Arrival','Actual Arrival','SAT OK','Deadline','Actual Departure','SDT OK'];const rows=currentReport.vehicles.map(v=>[v.vrid,v.lane,v.categoryLabel,v.plannedSAT,v.actualSAT,v.satCompliant?'Yes':'No',v.plannedSDT,v.actualSDT,v.sdtCompliant?'Yes':'No'].map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(','));return[h.join(','),...rows].join('\n');}
+function dlCSV(){const csv=genCSV();if(!csv)return;const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='YMS_Report_'+siteCode+'_'+selectedDate+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
+function cpCSV(){const csv=genCSV();if(!csv)return;navigator.clipboard.writeText(csv).then(()=>alert('\u2705 Copied to clipboard!')).catch(()=>alert('\u274C Clipboard not available.'));}
+</script>
+</body>
+</html>
