@@ -187,7 +187,7 @@ function buildReport(rows){
 function mS(v){const t=v.actualSDT||v.actualSAT||v.plannedSDT||v.plannedSAT;if(!t)return true;const m=t.match(/(\d{1,2}):(\d{2})/);if(!m)return true;const tv=parseInt(m[1])*60+parseInt(m[2]);if(shiftFilter==='day')return tv>=510&&tv<1110;return tv>=1110||tv<270;}
 function renderFilters(allV){
   document.getElementById('filtersSection').style.display='block';
-  const sh=[{k:'full',l:'Full Day'},{k:'day',l:'\u2600\uFE0F Day (08:30-18:30)'},{k:'night',l:'\u1F319 Night (18:30-04:30)'}];
+  const sh=[{k:'full',l:'Full Day'},{k:'day',l:'\u2600\uFE0F Day (08:30-18:30)'},{k:'night',l:'\uD83C\uDF19 Night (18:30-04:30)'}];
   document.getElementById('shiftPills').innerHTML=sh.map(s=>'<button class="shift-pill '+(shiftFilter===s.k?'active':'')+'" onclick="setSh(\''+s.k+'\')">'+s.l+'</button>').join('');
   const cats=[{k:'all',l:'All'},...SHIPPER_CATEGORIES.map(c=>({k:c.key,l:c.label}))];
   const cnt={};allV.forEach(v=>{cnt[v.category]=(cnt[v.category]||0)+1;});
@@ -206,7 +206,7 @@ function renderReport(){
   const cats=Object.values(cm);const lA=v.filter(x=>!x.satCompliant&&x.satEligible),lD=v.filter(x=>!x.sdtCompliant&&(hV(x.plannedSDT)||hV(x.cpt)));
   const dateLabel=selectedDate.startsWith('WEEK:')?'Week '+selectedDate.split(':')[1]+' to '+selectedDate.split(':')[2]:selectedDate;
   let h='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem">';
-  h+='<h2 style="font-size:1.2rem;font-weight:700;color:var(--text)">&#x1F4CA; Compliance Report \u2014 '+r.siteCode+' ('+dateLabel+')</h2>';
+  h+='<h2 style="font-size:1.2rem;font-weight:700;color:var(--text)">&#x1F4CA; YMS Compliance Report \u2014 '+r.siteCode+' ('+dateLabel+')</h2>';
   h+='<div style="display:flex;gap:0.5rem"><button class="btn btn-green" onclick="dlCSV()">&#x1F4E5; CSV</button><button class="btn btn-purple" onclick="cpCSV()">&#x1F4CB; Copy</button></div></div>';
   h+='<div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem"><div style="flex:1 1 300px"><div style="display:flex;gap:1.5rem;margin-bottom:1rem">';
   h+='<div style="flex:1;text-align:center"><div style="font-size:0.75rem;color:var(--subtext);margin-bottom:4px">Arrival Compliance</div><div style="font-size:2.5rem;font-weight:800;color:'+cC(satP)+'">'+satP+'%</div></div>';
@@ -240,7 +240,7 @@ function renderLaneCompliance(){
   h+='<div style="overflow-x:auto;max-height:400px;overflow-y:auto"><table class="lane-table"><thead><tr><th>Lane</th><th style="text-align:center">Vehicles</th><th style="text-align:center">Arrival %</th><th style="text-align:center">Departure %</th><th style="text-align:center">Status</th></tr></thead><tbody>';
   lanes.forEach(l=>{
     const worst=Math.min(l.satPct>=0?l.satPct:100,l.sdtPct>=0?l.sdtPct:100);
-    const icon=worst>=95?'\u2705':worst>=85?'\u26A0\uFE0F':'\u1F6A8';
+    const icon=worst>=95?'\u2705':worst>=85?'\u26A0\uFE0F':'\uD83D\uDEA8';
     h+='<tr><td style="font-weight:600;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+l.lane+'</td>';
     h+='<td style="text-align:center">'+l.total+'</td>';
     h+='<td style="text-align:center"><span class="delay-badge" style="background:'+getBg(l.satPct)+';color:'+getClr(l.satPct)+'">'+(l.satPct>=0?l.satPct+'%':'N/A')+'</span></td>';
@@ -281,8 +281,8 @@ function renderDelayAnalysis(){
   h+='<div style="overflow-x:auto;max-height:200px;overflow-y:auto;border-radius:6px;border:1px solid #e2e8f0"><table class="lane-table"><thead><tr><th>VR ID</th><th>Lane</th><th>Type</th><th>Category</th><th style="text-align:right">Delay</th></tr></thead><tbody>';
   delays.slice(0,15).forEach((d,i)=>{
     h+='<tr style="background:'+(i%2===0?'#fff':'#f9fafb')+'"><td style="font-weight:600">'+d.vrid+'</td><td>'+d.lane+'</td>';
-    h+='<td><span style="background:'+(d.type==='Arrival'?'#dbeafe':'#fde68a')+';padding:1px 6px;border-radius:4px;font-size:0.72rem">'+(d.type==='Arrival'?'\u1F69B Arrival':'\u1F680 Departure')+'</span></td>';
-    h+='<td>'+d.cat+'</td><td style="text-align:right;font-weight:700;color:'+delClr(d.mins)+'">'+fmtMins(d.mins)+(d.mins>=120?' \u1F6A8':'')+'</td></tr>';
+    h+='<td><span style="background:'+(d.type==='Arrival'?'#dbeafe':'#fde68a')+';padding:1px 6px;border-radius:4px;font-size:0.72rem">'+(d.type==='Arrival'?'\uD83D\uDE9B Arrival':'\uD83D\uDE80 Departure')+'</span></td>';
+    h+='<td>'+d.cat+'</td><td style="text-align:right;font-weight:700;color:'+delClr(d.mins)+'">'+fmtMins(d.mins)+(d.mins>=120?' \uD83D\uDEA8':'')+'</td></tr>';
   });
   h+='</tbody></table></div></div>';
   document.getElementById('delaySection').innerHTML=h;
@@ -306,11 +306,11 @@ function saveToHistory(){
 function renderHistory(){
   if(!reportHistory.length){document.getElementById('historySection').style.display='none';return;}
   document.getElementById('historySection').style.display='block';
-  let h='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div style="font-size:1rem;font-weight:700;color:var(--text)">&#x1F4CB; Report History ('+reportHistory.length+')</div><button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="clearHistory()">\u1F5D1\uFE0F Clear</button></div>';
+  let h='<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem"><div style="font-size:1rem;font-weight:700;color:var(--text)">&#x1F4CB; Report History ('+reportHistory.length+')</div><button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="clearHistory()">\uD83D\uDDD1\uFE0F Clear</button></div>';
   h+='<div style="overflow-x:auto;max-height:300px;overflow-y:auto"><table class="history-table"><thead><tr><th>Date</th><th>Site</th><th>Vehicles</th><th>Arrival %</th><th>Departure %</th><th>Status</th><th>Saved At</th></tr></thead><tbody>';
   reportHistory.forEach(r=>{
     const overall=Math.round((r.arrPct+r.depPct)/2);
-    const statusIcon=overall>=95?'\u2705':overall>=85?'\u26A0\uFE0F':'\u1F6A8';
+    const statusIcon=overall>=95?'\u2705':overall>=85?'\u26A0\uFE0F':'\uD83D\uDEA8';
     h+='<tr><td style="font-weight:600">'+r.date+'</td><td>'+r.site+'</td><td>'+r.vehicles+'</td>';
     h+='<td style="color:'+cC(r.arrPct)+';font-weight:700">'+r.arrPct+'%</td>';
     h+='<td style="color:'+cC(r.depPct)+';font-weight:700">'+r.depPct+'%</td>';
