@@ -1,6 +1,6 @@
+```xml
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YMS Compliance Tool — Standalone</title>
@@ -67,37 +67,37 @@ input[type="text"]{width:90px;text-transform:uppercase}
 <div class="container" id="app">
   <div class="header">
     <div>
-      <h1>&#x1F69B; YMS Compliance Tool</h1>
+      <h1>🚛 YMS Compliance Tool</h1>
       <p style="font-size:0.8rem;opacity:0.8;margin-top:4px" id="subtitle">Standalone Version — Works offline in any browser</p>
     </div>
     <div class="header-controls">
-      <input type="text" id="siteInput" value="GURX" placeholder="Site Code" onkeydown="if(event.key==='Enter')applySiteCode()">
-      <button class="btn btn-primary" onclick="applySiteCode()">&#x1F50D;</button>
-      <input type="date" id="dateInput" onchange="handleDateFilter(this.value)" title="Filter by date">
-      <input type="week" id="weekInput" onchange="handleWeekFilter(this.value)" title="Filter by week">
-      <button class="btn btn-sm btn-dark" onclick="resetFilters()" title="Reset date/week filter">&#x21BB; Reset</button>
-      <button class="btn btn-orange" onclick="window.open('https://trans-logistics-eu.amazon.com/fmc/execution','_blank')">&#x1F517; FMC</button>
-      <button class="btn btn-dark" onclick="toggleDark()">&#x1F319;</button>
+      <input type="text" id="siteInput" value="GURX" placeholder="Site Code" onkeydown="if(event.key==='Enter')applySiteCode()" data-agent-id="1">
+      <button class="btn btn-primary" onclick="applySiteCode()" data-agent-id="2">🔍</button>
+      <input type="date" id="dateInput" onchange="handleDateFilter(this.value)" title="Filter by date" data-agent-id="3">
+      <input type="week" id="weekInput" onchange="handleWeekFilter(this.value)" title="Filter by week" data-agent-id="4">
+      <button class="btn btn-sm btn-dark" onclick="resetFilters()" title="Reset date/week filter" data-agent-id="5">↻ Reset</button>
+      <button class="btn btn-orange" onclick="window.open('https://track.relay.amazon.dev/?m=trip&r=eu&type=vehicleRun&q=112PLPQ43%2C1124LTWMD%2C113K126J4&redirectUrl=https%3A%2F%2Ftrans-logistics-eu.amazon.com%2Ffmc%2Fexecution%2F27Nam&preset=today&column=scheduled_end','_blank')" data-agent-id="6">🚚 Relay Track</button>
+      <button class="btn btn-dark" onclick="toggleDark()" data-agent-id="7">🌙</button>
     </div>
   </div>
   <div class="card">
-    <div style="font-weight:600;font-size:1.05rem;margin-bottom:1rem;color:var(--text)">&#x1F4C2; Upload FMC Excel File</div>
-    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('active')" ondragleave="this.classList.remove('active')" ondrop="handleDrop(event)">
-      <div style="font-size:2.5rem;margin-bottom:0.5rem">&#x1F4C1;</div>
-      <div style="font-weight:500;color:var(--text)">Drag & drop Excel file here, or click to browse</div>
+    <div style="font-weight:600;font-size:1.05rem;margin-bottom:1rem;color:var(--text)">📂 Upload FMC Excel File</div>
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('active')" ondragleave="this.classList.remove('active')" ondrop="handleDrop(event)" data-agent-id="8">
+      <div style="font-size:2.5rem;margin-bottom:0.5rem">📁</div>
+      <div style="font-weight:500;color:var(--text)">Drag &amp; drop Excel file here, or click to browse</div>
       <div style="font-size:0.8rem;color:var(--subtext);margin-top:0.5rem">Any Excel with "YMS Raw Data" sheet</div>
     </div>
     <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileSelect(event)">
     <div id="uploadStatus"></div>
     <div id="datePills"></div>
     <div class="info-box" style="margin-top:1rem">
-      <strong>&#x1F4A1; How to use:</strong><br>
+      <strong>💡 How to use:</strong><br>
       1. Export Excel from FMC<br>
-      2. Drag & drop here — instantly processed<br>
+      2. Drag &amp; drop here — instantly processed<br>
       3. Share this HTML file via email/SharePoint — no server needed!
     </div>
   </div>
-  <div id="filtersSection" style="display:none"><div class="card"><div style="font-weight:600;margin-bottom:0.75rem">&#x1F504; Shift & Category Filter</div><div class="shift-pills" id="shiftPills"></div><div class="shift-pills" id="catPills"></div></div></div>
+  <div id="filtersSection" style="display:none"><div class="card"><div style="font-weight:600;margin-bottom:0.75rem">🔄 Shift &amp; Category Filter</div><div class="shift-pills" id="shiftPills"></div><div class="shift-pills" id="catPills"></div></div></div>
   <div id="reportSection" style="display:none"></div>
   <div id="laneSection" style="display:none"></div>
   <div id="delaySection" style="display:none"></div>
@@ -334,5 +334,7 @@ function dlCSV(){const csv=genCSV();if(!csv)return;const blob=new Blob([csv],{ty
 function cpCSV(){const csv=genCSV();if(!csv)return;navigator.clipboard.writeText(csv).then(()=>alert('\u2705 Copied to clipboard!')).catch(()=>alert('\u274C Clipboard not available.'));}
 renderHistory();
 </script>
-</body>
-</html>
+
+
+</body></html>
+```
